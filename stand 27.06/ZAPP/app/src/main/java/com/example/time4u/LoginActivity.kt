@@ -30,10 +30,11 @@ class LoginActivity : AppCompatActivity() {
             }
 
             if (name.isNotEmpty() && (checkboxFemale.isChecked || checkboxMale.isChecked)) {
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("name", name)
-                intent.putExtra("profile", profile)
-                startActivity(intent)
+                val loginIntent = Intent(this, MainActivity::class.java)
+                loginIntent.putExtra("name", name)
+                loginIntent.putExtra("profile", profile)
+                loginIntent.putExtra("ComingFrom", "loginActivity")
+                startActivity(loginIntent)
                 finish()
             } else {
                 Toast.makeText(this, "Bitte gib einen Profilnamen ein und wähle mindestens eine Checkbox aus.", Toast.LENGTH_SHORT).show()

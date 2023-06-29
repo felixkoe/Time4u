@@ -17,16 +17,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import org.w3c.dom.Text
 import java.util.*
 /*
 * TO DO
 *
 * Design
-* Datenbank einbinden
 * einstellungen -> App zurücksetzen / Daten löschen
 * Patch Notes
 *
-* Namen eingeben, beim ersten login -> in Datenbank hinterlegen
 * -> Begrüßung mit eigenem Namen
 *
 * Profil erstellen
@@ -40,12 +39,14 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var isDatabasePopulated = false
+    private lateinit var db: AppDatabase
+
 
     private lateinit var timer: CountDownTimer
     private lateinit var startButton: Button
     private lateinit var profileButton : Button             // Button zum erstellen eines Profils
     private lateinit var timeDisplay: TextView              //Timer Anzeige
+    private lateinit var displayProfileName : TextView      // Anzeige Profilname
     private lateinit var imageBeforeTimer : ImageView       //startendes Flugzeug
     private lateinit var imageDuringTimer : ImageView       //fliegendes Flugzeug
     private lateinit var imageAfterTimer : ImageView        //landendes  Flugzeug
@@ -54,24 +55,23 @@ class MainActivity : AppCompatActivity() {
     var pointsWinnable : Int = 0                            //zu holende Punkte, wenn der Timer vorbei ist
 
     private var isTimerRunning = false
-    private var isAirplaneModeEnabled = false
 
-    /**********************************************************
+     /*********************************************************
      *******************  **** Datenbank ****  ****************
-     **********************************************************/
+     *********************************************************/
 
 
     class AppDatabase(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
         companion object {
 
-            private const val DATABASE_NAME = "user_database"
+            internal const val DATABASE_NAME = "user_database"
             private const val DATABASE_VERSION = 1
             private const val TABLE_NAME = "users"
             private const val COLUMN_ID = "id"
-            private const val COLUMN_NAME = "name"
-            private const val COLUMN_PROFILE_IMAGE = "profile_image"
-            private const val COLUMN_POINTS_ALL = 0
+            private const val COLUMN_NAME = "profileName"
+            private const val COLUMN_PROFILE_IMAGE = "profileImage"
+            private const val COLUMN_POINTS_ALL = "pointsAll"
 
 
             // singleton Methode
@@ -85,12 +85,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onCreate(db: SQLiteDatabase?) {
-            val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_NAME TEXT, $COLUMN_PROFILE_IMAGE TEXT, $COLUMN_NAME POINTS)"
+            val createTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, profileName TEXT, profileImage TEXT, pointsALL INTEGER)"
             db?.execSQL(createTableQuery)
         }
 
         override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-
         }
 
         fun insertUser(name: String, profileImageName: String, points: Int) {
@@ -98,49 +97,106 @@ class MainActivity : AppCompatActivity() {
                 val contentValues = ContentValues().apply {
                     put(COLUMN_NAME, name)
                     put(COLUMN_PROFILE_IMAGE, profileImageName)
+                    put(COLUMN_POINTS_ALL, points)
                 }
                 db.insert(TABLE_NAME, null, contentValues)
             }
         }
-    }
+         fun deleteAllData() {
+             writableDatabase.use { db ->
+                 db.delete(TABLE_NAME, null, null)
+             }
+         }
+
+
+         fun hasData(): Boolean {
+             val db = writableDatabase
+             val query = "SELECT COUNT(*) FROM users"
+             val cursor = db.rawQuery(query, null)
+             var hasData = false
+
+             if (cursor.moveToFirst()) {
+                 val count = cursor.getInt(0)
+                 hasData = count > 0
+             }
+
+             cursor.close()
+
+             return hasData
+         }
+
+
+         fun getUserName(): String? {
+             var username: String? = null
+             readableDatabase.use { db ->
+                 val query = "SELECT profileName FROM users LIMIT 1"
+                 val cursor = db.rawQuery(query, null)
+                 if (cursor.moveToFirst()) {
+                     val columnIndex = cursor.getColumnIndex(COLUMN_NAME)
+                     if (columnIndex >= 0) {
+                         username = cursor.getString(columnIndex)
+                     }
+                 }
+                 cursor.close()
+             }
+             return username
+         }
+
+
+
+
+     }
 
 
     /**********************************************************
-     ******************       ****  ****       ****************
+     ******************      on Create       ****************
      **********************************************************/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_main)
 
-
-        if(!isDatabasePopulated) {
-
-
-            val db = AppDatabase.getInstance(this)                      // Initialisierung Variable für Datenbank
-            //Get Data from loginfile
-            val intent = intent
-            val name = intent.getStringExtra("name")
-            val profile = intent.getStringExtra("profile")
-
-            //if (name != null && profile != null) {
-            //    db.insertUser(name, profile, 0)
-            //}
-
-
-            isDatabasePopulated = true
-        }
-
+        db = AppDatabase.getInstance(applicationContext)
 
         //init variables on create
         imageBeforeTimer = findViewById(R.id.imageBeforeTimer)
         imageDuringTimer = findViewById(R.id.imageDuringTimer)
         imageAfterTimer = findViewById(R.id.imageAfterTimer)
+        displayProfileName = findViewById(R.id.nutzername)
 
         startButton = findViewById(R.id.startTimer)
         profileButton = findViewById(R.id.profile_button)
         timeDisplay = findViewById(R.id.timeDisplay)
+
+
+        //Überpürfen ob eintritt in die Main Activity über die LoginActivity
+        val comingFrom = intent.getStringExtra("ComingFrom")
+        if (comingFrom == "loginActivity") {
+            // Code ausführen, der speziell für den Fall gilt, dass du aus der LoginAcitvity gekommen bist
+            val db = AppDatabase.getInstance(this)                      // Initialisierung Variable für Datenbank
+            //Get Data from loginfile
+            val loginIntent = intent
+            val name = loginIntent.getStringExtra("name")
+            val profile = loginIntent.getStringExtra("profile")
+
+            if (name != null && profile != null) {
+                db.insertUser(name, profile, 0)
+            }
+            profileButton.visibility = View.GONE                                // Button für login entfernen
+            db.close()
+        }
+
+        if(db.hasData()) {
+            val username = db.getUserName()
+            if (username != null) {
+                displayProfileName.text = username
+
+                profileButton.visibility = View.GONE
+                //db.close()
+            } else {
+                // Kein Benutzername in der Datenbank vorhanden
+            }
+        }
 
         startButton.setOnClickListener {
             if (isAirplaneModeOn()) {
@@ -154,35 +210,18 @@ class MainActivity : AppCompatActivity() {
                 openAirplaneModeSettings()
             }
         }
-        /*profileButton.setOnClickListener {                          //Überprüfe ob User bereits angelegt
-            val dbHelper = AppDatabase(this)
-            val db = dbHelper.readableDatabase
 
-            val query = "SELECT COUNT(*) FROM users"
-            val cursor = db.rawQuery(query, null)
+        profileButton.setOnClickListener {                          //Überprüfe ob User bereits angelegt
 
-            if (cursor.moveToFirst()) {
-                val count = cursor.getInt(0)
-                if (count > 0) {
-                    // Daten sind vorhanden
-
-                    val intent = Intent(this, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish()
-
-                } else {
-                    // Keine Daten vorhanden
-                    //öffne die Login Activity
-                }
-            }
-
-            cursor.close()
-            db.close()
-
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish()
         }
 
-         */
+
     }
+
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -274,8 +313,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 //Show Message on Screen
-    private fun showMessage(message: String)
-    {
+    private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
