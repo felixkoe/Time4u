@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.w3c.dom.Text
 import java.util.*
+import android.util.Log
 /*
 * TO DO
 *
@@ -44,12 +45,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var timer: CountDownTimer
     private lateinit var startButton: Button
-    private lateinit var profileButton : Button             // Button zum erstellen eines Profils
-    private lateinit var timeDisplay: TextView              //Timer Anzeige
+    private lateinit var profileButton : Button            // Button zum erstellen eines Profils
+    private lateinit var deleteProfile : Button            // Button zum löschen des Profils
+
+    private lateinit var timeDisplay: TextView              // Timer Anzeige
     private lateinit var displayProfileName : TextView      // Anzeige Profilname
-    private lateinit var imageBeforeTimer : ImageView       //startendes Flugzeug
-    private lateinit var imageDuringTimer : ImageView       //fliegendes Flugzeug
-    private lateinit var imageAfterTimer : ImageView        //landendes  Flugzeug
+    private lateinit var displayPointsAll : TextView        // Anzeige Punkte
+
+    private lateinit var imageBeforeTimer : ImageView       // startendes Flugzeug
+    private lateinit var imageDuringTimer : ImageView       // fliegendes Flugzeug
+    private lateinit var imageAfterTimer : ImageView        // landendes  Flugzeug
 
 
     var pointsWinnable : Int = 0                            //zu holende Punkte, wenn der Timer vorbei ist
@@ -110,7 +115,7 @@ class MainActivity : AppCompatActivity() {
 
 
          fun hasData(): Boolean {
-             val db = writableDatabase
+             val db = readableDatabase
              val query = "SELECT COUNT(*) FROM users"
              val cursor = db.rawQuery(query, null)
              var hasData = false
@@ -121,9 +126,12 @@ class MainActivity : AppCompatActivity() {
              }
 
              cursor.close()
+             db.close()
 
              return hasData
          }
+
+
 
 
          fun getUserName(): String? {
@@ -141,6 +149,28 @@ class MainActivity : AppCompatActivity() {
              }
              return username
          }
+
+         fun getPointsAll(): String? {
+             var pointsAll: String? = null
+             readableDatabase.use { db ->
+                 val query = "SELECT pointsAll FROM users LIMIT 1"
+                 val cursor = db.rawQuery(query, null)
+                 if (cursor.moveToFirst()) {
+                     val columnIndex = cursor.getColumnIndex(COLUMN_POINTS_ALL)
+                     if (columnIndex >= 0) {
+                         pointsAll = cursor.getString(columnIndex)
+                     }
+                 }
+                 cursor.close()
+             }
+             return pointsAll
+         }
+
+
+
+
+
+
 
 
 
@@ -162,10 +192,14 @@ class MainActivity : AppCompatActivity() {
         imageBeforeTimer = findViewById(R.id.imageBeforeTimer)
         imageDuringTimer = findViewById(R.id.imageDuringTimer)
         imageAfterTimer = findViewById(R.id.imageAfterTimer)
+
         displayProfileName = findViewById(R.id.nutzername)
+        displayPointsAll = findViewById(R.id.pointsAll)
 
         startButton = findViewById(R.id.startTimer)
         profileButton = findViewById(R.id.profile_button)
+        deleteProfile = findViewById(R.id.deleteProfile)
+
         timeDisplay = findViewById(R.id.timeDisplay)
 
 
@@ -183,19 +217,30 @@ class MainActivity : AppCompatActivity() {
                 db.insertUser(name, profile, 0)
             }
             profileButton.visibility = View.GONE                                // Button für login entfernen
+            deleteProfile.visibility = View.VISIBLE                             // Button für Profillöschung anzeigen lassen
+
             db.close()
         }
 
+
+
+        //generelles Abchecken, ob die Datenbank Daten beinhaltet
         if(db.hasData()) {
             val username = db.getUserName()
+            val pointsAll = db.getPointsAll()
             if (username != null) {
+                //Datenbank enthält Daten
+
                 displayProfileName.text = username
+                displayPointsAll.text = pointsAll
 
                 profileButton.visibility = View.GONE
-                //db.close()
-            } else {
-                // Kein Benutzername in der Datenbank vorhanden
+                deleteProfile.visibility = View.VISIBLE
             }
+            }else {
+                //Datenbank enthält keine Daten
+                profileButton.visibility = View.VISIBLE
+                deleteProfile.visibility = View.GONE
         }
 
         startButton.setOnClickListener {
@@ -218,6 +263,12 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
 
+        deleteProfile.setOnClickListener {
+            db.deleteAllData()
+
+            profileButton.visibility = View.VISIBLE
+            deleteProfile.visibility = View.GONE
+        }
 
     }
 
@@ -225,6 +276,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        db.close()
     }
 
     private fun isAirplaneModeOn(): Boolean {

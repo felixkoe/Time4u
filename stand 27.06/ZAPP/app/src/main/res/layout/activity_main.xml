@@ -106,16 +106,28 @@
         app:layout_constraintHorizontal_bias="0.05" app:layout_constraintVertical_bias="0.027"/>
 
     <Button
-        android:id="@+id/delete_Profile"
+        android:id="@+id/deleteProfile"
         android:layout_width="119dp"
         android:layout_height="55dp"
         android:text="Profil löschen"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.054"
+        app:layout_constraintHorizontal_bias="0.047"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.107" />
+        app:layout_constraintVertical_bias="0.026"
+        tools:visibility="gone" />
+
+    <TextView
+        android:id="@+id/pointsAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.807"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.064" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
