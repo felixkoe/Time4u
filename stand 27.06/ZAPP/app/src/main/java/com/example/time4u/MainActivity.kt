@@ -17,19 +17,18 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import org.w3c.dom.Text
 import java.util.*
-import android.util.Log
+
+
 /*
 * TO DO
 *
-* Design
-* einstellungen -> App zurücksetzen / Daten löschen
+* Design -> größere Nutzeroberfläche
 * Patch Notes
-*
 * -> Begrüßung mit eigenem Namen
+*    Store
+*   mehr Profilbilder, möglichkeit einbauen zum scrollen
 *
-* Profil erstellen
 * */
 
 
@@ -51,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timeDisplay: TextView              // Timer Anzeige
     private lateinit var displayProfileName : TextView      // Anzeige Profilname
     private lateinit var displayPointsAll : TextView        // Anzeige Punkte
+    private lateinit var displayProfilePicture: ImageView   // Anzeige Profilbild
 
     private lateinit var imageBeforeTimer : ImageView       // startendes Flugzeug
     private lateinit var imageDuringTimer : ImageView       // fliegendes Flugzeug
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         override fun onCreate(db: SQLiteDatabase?) {
-            val createTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, profileName TEXT, profileImage TEXT, pointsALL INTEGER)"
+            val createTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, profileName TEXT, profileImage TEXT, pointsALL INTEGER Default 0)"
             db?.execSQL(createTableQuery)
         }
 
@@ -132,8 +132,6 @@ class MainActivity : AppCompatActivity() {
          }
 
 
-
-
          fun getUserName(): String? {
              var username: String? = null
              readableDatabase.use { db ->
@@ -150,28 +148,52 @@ class MainActivity : AppCompatActivity() {
              return username
          }
 
-         fun getPointsAll(): String? {
-             var pointsAll: String? = null
-             readableDatabase.use { db ->
-                 val query = "SELECT pointsAll FROM users LIMIT 1"
-                 val cursor = db.rawQuery(query, null)
-                 if (cursor.moveToFirst()) {
-                     val columnIndex = cursor.getColumnIndex(COLUMN_POINTS_ALL)
-                     if (columnIndex >= 0) {
-                         pointsAll = cursor.getString(columnIndex)
-                     }
+         fun getPointsAll(): Int {
+             val db = readableDatabase
+             val query = "SELECT pointsAll FROM users"
+             val cursor = db.rawQuery(query, null)
+             var pointsAll = 0
+
+             if (cursor.moveToFirst()) {
+                 val columnIndex = cursor.getColumnIndex(COLUMN_POINTS_ALL)
+                 if (columnIndex >= 0) {
+                     pointsAll = cursor.getInt(columnIndex)
                  }
-                 cursor.close()
              }
+
+             cursor.close()
+             db.close()
+
              return pointsAll
          }
 
+         fun getProfileImage(): String? {
+             val db = readableDatabase
+             val query = "SELECT profileImage FROM users LIMIT 1"
+             val cursor = db.rawQuery(query, null)
+             var profileImage: String? = null
 
+             if (cursor.moveToFirst()) {
+                 val columnIndex = cursor.getColumnIndex(COLUMN_PROFILE_IMAGE)
+                 if (columnIndex != -1) {
+                     profileImage = cursor.getString(columnIndex)
+                 }
+             }
 
+             cursor.close()
+             db.close()
 
+             return profileImage
+         }
 
-
-
+         fun updatePointsAll(newPointsAll: Int) {
+             val db = writableDatabase
+             val contentValues = ContentValues().apply {
+                 put(COLUMN_POINTS_ALL, newPointsAll)
+             }
+             db.update(TABLE_NAME, contentValues, null, null)
+             db.close()
+         }
 
 
 
@@ -186,6 +208,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
         db = AppDatabase.getInstance(applicationContext)
 
         //init variables on create
@@ -195,6 +218,7 @@ class MainActivity : AppCompatActivity() {
 
         displayProfileName = findViewById(R.id.nutzername)
         displayPointsAll = findViewById(R.id.pointsAll)
+        displayProfilePicture = findViewById(R.id.profilePicture)
 
         startButton = findViewById(R.id.startTimer)
         profileButton = findViewById(R.id.profile_button)
@@ -222,17 +246,27 @@ class MainActivity : AppCompatActivity() {
             db.close()
         }
 
+        /*********************************************************
+         *******************  **** Profile ****  *****************
+         *********************************************************/
 
-
+        /*
         //generelles Abchecken, ob die Datenbank Daten beinhaltet
         if(db.hasData()) {
-            val username = db.getUserName()
-            val pointsAll = db.getPointsAll()
+            val username = db.getUserName()             // holen des Usernamens aus der Datenbank
+            val pointsAll = db.getPointsAll()           // holen des Punktestands aus der Datenbank
             if (username != null) {
                 //Datenbank enthält Daten
 
                 displayProfileName.text = username
-                displayPointsAll.text = pointsAll
+                displayPointsAll.text = pointsAll.toString()
+
+                if (db.getProfileImage() == "female") {
+                    displayProfilePicture.setImageResource(R.drawable.frau)
+                } else if (db.getProfileImage() == "male") {
+                    displayProfilePicture.setImageResource(R.drawable.mann)
+                }
+
 
                 profileButton.visibility = View.GONE
                 deleteProfile.visibility = View.VISIBLE
@@ -242,6 +276,13 @@ class MainActivity : AppCompatActivity() {
                 profileButton.visibility = View.VISIBLE
                 deleteProfile.visibility = View.GONE
         }
+        */
+
+        checkDatabase(db, displayProfileName, displayPointsAll, displayProfilePicture, profileButton, deleteProfile)
+
+        /*********************************************************
+         *******************  **** Buttons  ****  ****************
+         *********************************************************/
 
         startButton.setOnClickListener {
             if (isAirplaneModeOn()) {
@@ -266,12 +307,15 @@ class MainActivity : AppCompatActivity() {
         deleteProfile.setOnClickListener {
             db.deleteAllData()
 
+            checkDatabase(db, displayProfileName, displayPointsAll, displayProfilePicture, profileButton, deleteProfile)
             profileButton.visibility = View.VISIBLE
             deleteProfile.visibility = View.GONE
         }
-
     }
 
+    /*********************************************************
+     *****************  ****  Funktions ****  ****************
+     *********************************************************/
 
 
     override fun onDestroy() {
@@ -318,7 +362,6 @@ class MainActivity : AppCompatActivity() {
                 val showWinnablePoints = findViewById<TextView>(R.id.showWinnablePoints)
                 showWinnablePoints.text = pointsWinnable.toString()
 
-
                 timeDisplay.text = timeString
 
                 if(!isAirplaneModeOn())
@@ -334,6 +377,9 @@ class MainActivity : AppCompatActivity() {
             override fun onFinish() {
                 timeDisplay.text = "00:00:00"
                 playRingtone()
+                // zu Holende Punkte mit den aktuell bestehenden Punkten von der Datenbank addieren und in der DB abspeichern
+                db.updatePointsAll(pointsWinnable)
+
                 startButton.text = "Start"
                 isTimerRunning = false
             }
@@ -368,7 +414,61 @@ class MainActivity : AppCompatActivity() {
     private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
+
+    fun checkDatabase(db: AppDatabase, usernameView: TextView, pointsAllView: TextView, profileImageView: ImageView, profileButton: Button, deleteProfile: Button) {
+        if (db.hasData()) {
+            val username = db.getUserName()
+            val pointsAll = db.getPointsAll()
+
+            if (username != null) {
+                // Datenbank enthält Daten
+                usernameView.text = username
+                pointsAllView.text = pointsAll.toString()
+
+                if (db.getProfileImage() == "female") {
+                    profileImageView.setImageResource(R.drawable.mann)
+                } else if (db.getProfileImage() == "male") {
+                    profileImageView.setImageResource(R.drawable.frau)
+                }
+
+                profileButton.visibility = View.GONE
+                deleteProfile.visibility = View.VISIBLE
+            }
+        } else {
+            // Datenbank enthält keine Daten / Daten wurden gelöscht
+            usernameView.text = ""
+            profileImageView.setImageResource(0)
+            pointsAllView.visibility = View.GONE
+            profileButton.visibility = View.VISIBLE
+            deleteProfile.visibility = View.GONE
+        }
+    }
+
+/*
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Füge das Menülayout hinzu
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle Aktionen basierend auf der ausgewählten Option
+        when (item.itemId) {
+            R.id.action_settings -> {
+                // Hier kannst du den Code für die Einstellungen einfügen
+                return true
+            }
+            // Füge hier weitere Optionen hinzu, falls gewünscht
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
+*/
+
 }
+
+
+
 
 
 

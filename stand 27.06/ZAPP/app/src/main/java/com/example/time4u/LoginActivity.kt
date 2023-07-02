@@ -20,6 +20,20 @@ class LoginActivity : AppCompatActivity() {
 
         val buttonSave = findViewById<Button>(R.id.buttonWeiter)
 
+        //Sicherstellen, dass nur eine Checkbox gewähält wird
+        checkboxFemale.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Checkbox 1 wurde ausgewählt
+                checkboxMale.isChecked = false // Checkbox 2 abwählen
+            }
+        }
+        checkboxMale.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                // Checkbox 2 wurde ausgewählt
+                checkboxFemale.isChecked = false // Checkbox 1 abwählen
+            }
+        }
+
         buttonSave.setOnClickListener {
             val nameEditText = findViewById<EditText>(R.id.profileName)
             val name = nameEditText.text.toString()
