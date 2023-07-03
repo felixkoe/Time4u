@@ -23,11 +23,11 @@ import java.util.*
 /*
 * TO DO
 *
-* Design -> größere Nutzeroberfläche
+* Design
 * Patch Notes
 * -> Begrüßung mit eigenem Namen
 *    Store
-*   mehr Profilbilder, möglichkeit einbauen zum scrollen
+*   mehr Profilbilder, möglichkeit einbauen zum scrollen (RecyclerView)
 *
 * */
 
@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
 
     var pointsWinnable : Int = 0                            //zu holende Punkte, wenn der Timer vorbei ist
+    var timerFinished : Boolean = false
 
     private var isTimerRunning = false
 
@@ -100,6 +101,7 @@ class MainActivity : AppCompatActivity() {
         fun insertUser(name: String, profileImageName: String, points: Int) {
             writableDatabase.use { db ->
                 val contentValues = ContentValues().apply {
+                    put(COLUMN_ID, 1)
                     put(COLUMN_NAME, name)
                     put(COLUMN_PROFILE_IMAGE, profileImageName)
                     put(COLUMN_POINTS_ALL, points)
@@ -150,7 +152,7 @@ class MainActivity : AppCompatActivity() {
 
          fun getPointsAll(): Int {
              val db = readableDatabase
-             val query = "SELECT pointsAll FROM users"
+             val query = "SELECT pointsAll FROM users LIMIT 1"
              val cursor = db.rawQuery(query, null)
              var pointsAll = 0
 
@@ -191,10 +193,10 @@ class MainActivity : AppCompatActivity() {
              val contentValues = ContentValues().apply {
                  put(COLUMN_POINTS_ALL, newPointsAll)
              }
+
              db.update(TABLE_NAME, contentValues, null, null)
              db.close()
          }
-
 
 
      }
@@ -247,38 +249,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         /*********************************************************
-         *******************  **** Profile ****  *****************
+         ***************  **** checkup Profile ****  *************
          *********************************************************/
 
-        /*
-        //generelles Abchecken, ob die Datenbank Daten beinhaltet
-        if(db.hasData()) {
-            val username = db.getUserName()             // holen des Usernamens aus der Datenbank
-            val pointsAll = db.getPointsAll()           // holen des Punktestands aus der Datenbank
-            if (username != null) {
-                //Datenbank enthält Daten
 
-                displayProfileName.text = username
-                displayPointsAll.text = pointsAll.toString()
-
-                if (db.getProfileImage() == "female") {
-                    displayProfilePicture.setImageResource(R.drawable.frau)
-                } else if (db.getProfileImage() == "male") {
-                    displayProfilePicture.setImageResource(R.drawable.mann)
-                }
-
-
-                profileButton.visibility = View.GONE
-                deleteProfile.visibility = View.VISIBLE
-            }
-            }else {
-                //Datenbank enthält keine Daten
-                profileButton.visibility = View.VISIBLE
-                deleteProfile.visibility = View.GONE
-        }
-        */
 
         checkDatabase(db, displayProfileName, displayPointsAll, displayProfilePicture, profileButton, deleteProfile)
+
+
+
 
         /*********************************************************
          *******************  **** Buttons  ****  ****************
@@ -340,7 +319,8 @@ class MainActivity : AppCompatActivity() {
         val timePickerDialog = TimePickerDialog(this, { _, selectedHour, selectedMinute ->
             val selectedTimeInMillis = (selectedHour * 3600 + selectedMinute * 60) * 1000L
             startTimer(selectedTimeInMillis)
-            pointsWinnable = selectedHour *60 + selectedMinute  //mögliche zu erzielende Punkte errechnen
+
+            pointsWinnable = selectedHour *60 + selectedMinute + 1 //mögliche zu erzielende Punkte errechnen (1 Minute = 1 Punkt)
         }, currentHour, currentMinute, true)
 
 
@@ -378,7 +358,11 @@ class MainActivity : AppCompatActivity() {
                 timeDisplay.text = "00:00:00"
                 playRingtone()
                 // zu Holende Punkte mit den aktuell bestehenden Punkten von der Datenbank addieren und in der DB abspeichern
+
+
                 db.updatePointsAll(pointsWinnable)
+                //timerFinished = true
+                //checkDatabase(db, displayProfileName, displayPointsAll, displayProfilePicture, profileButton, deleteProfile)
 
                 startButton.text = "Start"
                 isTimerRunning = false
@@ -394,7 +378,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun cancelTimer() {
         timer.cancel()
-        showMessage("Der Timer wurder abgebrochen, es werden keine Punkte gutgeschrieben!")
+        showMessage("Der Timer wurde abgebrochen, es werden keine Punkte gutgeschrieben!")
         imageDuringTimer.visibility = View.INVISIBLE
         imageAfterTimer.visibility = View.VISIBLE
 
@@ -415,20 +399,26 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    fun checkDatabase(db: AppDatabase, usernameView: TextView, pointsAllView: TextView, profileImageView: ImageView, profileButton: Button, deleteProfile: Button) {
+    private fun checkDatabase(db: AppDatabase, usernameView: TextView, pointsAllView: TextView, profileImageView: ImageView, profileButton: Button, deleteProfile: Button) {
         if (db.hasData()) {
-            val username = db.getUserName()
-            val pointsAll = db.getPointsAll()
+            val user = db.getUserName()
+            val points = db.getPointsAll()
 
-            if (username != null) {
+            if (user != null) {
                 // Datenbank enthält Daten
-                usernameView.text = username
-                pointsAllView.text = pointsAll.toString()
+                usernameView.text = user
+                pointsAllView.text = points.toString()
 
                 if (db.getProfileImage() == "female") {
                     profileImageView.setImageResource(R.drawable.mann)
                 } else if (db.getProfileImage() == "male") {
                     profileImageView.setImageResource(R.drawable.frau)
+                }
+
+                if (timerFinished) {
+                    db.updatePointsAll(points)
+                    pointsAllView.text = points.toString()
+                    timerFinished = false
                 }
 
                 profileButton.visibility = View.GONE
@@ -446,19 +436,14 @@ class MainActivity : AppCompatActivity() {
 
 /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Füge das Menülayout hinzu
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle Aktionen basierend auf der ausgewählten Option
         when (item.itemId) {
             R.id.action_settings -> {
-                // Hier kannst du den Code für die Einstellungen einfügen
                 return true
             }
-            // Füge hier weitere Optionen hinzu, falls gewünscht
             else -> return super.onOptionsItemSelected(item)
         }
     }

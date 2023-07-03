@@ -88,8 +88,8 @@
 
     <ImageView
         android:id="@+id/profilePicture"
-        android:layout_width="200pt"
-        android:layout_height="200pt"
+        android:layout_width="50pt"
+        android:layout_height="50pt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.807"
@@ -121,6 +121,7 @@
 
     <TextView
         android:id="@+id/pointsAll"
+        android:text=""
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
