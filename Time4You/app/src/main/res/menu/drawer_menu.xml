@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:title="General">
+    <item android:title="Menu">
         <menu>
         <item
             android:id="@+id/home"
             android:icon="@drawable/baseline_home_24"
-            android:title="Home" />
+            android:title="Startseite" />
         <item
             android:id="@+id/another"
             android:icon="@drawable/baseline_group_add_24"
-            android:title="Another Menu" />
-        </menu>
-    </item>
-    <item android:title="Communication">
-        <menu>
-            <item
-                android:id="@+id/home1"
-                android:icon="@drawable/baseline_home_24"
-                android:title="Home" />
-            <item
-                android:id="@+id/another1"
-                android:icon="@drawable/baseline_group_add_24"
-                android:title="Another Menu" />
+            android:title="Profile" />
+        <item
+            android:id="@+id/home2"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Shop" />
+        <item
+            android:id="@+id/another2"
+            android:icon="@drawable/baseline_group_add_24"
+            android:title="Patch Notes" />
         </menu>
     </item>
 </menu>

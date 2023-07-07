@@ -1,9 +1,12 @@
 package com.example.time4you
 
+import android.app.TimePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.Gravity
+import android.os.CountDownTimer
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
@@ -11,8 +14,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.navigation.NavigationView
+import java.util.Calendar
+import java.util.*
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, MainFragment.onFragmentBtnSelected {
+
+
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, MainFragment.OnFragmentBtnSelected, MainFragment.Timer {
 
     lateinit var drawerLayout: DrawerLayout
     lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
@@ -63,11 +70,41 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         return true
     }
+    override fun startCountdownTimer(view: View) {
+        showTimePickerDialog()
+        val countTime: TextView = view.findViewById(R.id.countTime)
+        var countDownTimer = object : CountDownTimer(50000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val secondsLeft = millisUntilFinished / 1000
+                countTime.text = secondsLeft.toString()
+            }
+
+            override fun onFinish() {
+                countTime.text = "Finished"
+            }
+        }.start()
+    }
 
     override fun onButtonSelected() {
         fragmentManager = supportFragmentManager
         fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.container_fragment, FragmentSecond())
         fragmentTransaction.commit()
+    }
+
+    fun showTimePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(Calendar.MINUTE)
+
+        val timePickerDialog = TimePickerDialog(this, { _, selectedHour, selectedMinute ->
+            val selectedTimeInMillis = (selectedHour * 3600 + selectedMinute * 60) * 1000L
+            // startTimer(selectedTimeInMillis)
+
+            // pointsWinnable = selectedHour *60 + selectedMinute + 1 //mögliche zu erzielende Punkte errechnen (1 Minute = 1 Punkt)
+        }, currentHour, currentMinute, true)
+
+
+        timePickerDialog.show()
     }
 }
