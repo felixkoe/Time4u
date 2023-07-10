@@ -1,23 +1,23 @@
 package com.example.time4you
 
 import android.app.TimePickerDialog
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import androidx.appcompat.widget.Toolbar
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.navigation.NavigationView
 import java.util.Calendar
-import java.util.*
-
-
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, MainFragment.OnFragmentBtnSelected, MainFragment.Timer {
 
@@ -27,6 +27,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var navigationView: NavigationView
     lateinit var fragmentManager : FragmentManager
     lateinit var fragmentTransaction: FragmentTransaction
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -86,10 +88,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onButtonSelected() {
+        var test = isAirplaneModeOn()
+        Toast.makeText(this@MainActivity, "Der Flugmodus ist auf var: $test", Toast.LENGTH_SHORT).show()
         fragmentManager = supportFragmentManager
         fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.container_fragment, FragmentSecond())
         fragmentTransaction.commit()
+
+
     }
 
     fun showTimePickerDialog() {
@@ -106,5 +112,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
         timePickerDialog.show()
+    }
+
+    private fun isAirplaneModeOn(): Boolean {
+        return Settings.Global.getInt(contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
     }
 }
