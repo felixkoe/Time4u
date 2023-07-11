@@ -11,7 +11,7 @@
             android:icon="@drawable/baseline_group_add_24"
             android:title="Profile" />
         <item
-            android:id="@+id/home2"
+            android:id="@+id/shop"
             android:icon="@drawable/baseline_home_24"
             android:title="Shop" />
         <item

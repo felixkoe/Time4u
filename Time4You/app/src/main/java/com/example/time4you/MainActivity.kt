@@ -70,6 +70,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             fragmentTransaction.commit()
         }
 
+        if(menuItem.itemId == R.id.shop){
+            fragmentManager = supportFragmentManager
+            fragmentTransaction = fragmentManager.beginTransaction()
+            fragmentTransaction.replace(R.id.container_fragment, FragmentShop())
+            fragmentTransaction.commit()
+        }
+
         return true
     }
     override fun startCountdownTimer(view: View) {
