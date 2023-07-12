@@ -42,6 +42,10 @@ class MainFragment : Fragment() {
             val countTimeView = view.findViewById<TextView>(R.id.countTime)
             listener2.startCountdownTimer(countTimeView)
         }
+
+        val profileDatabase = ProfileDatabase.getInstance(requireContext())
+        ProfileDatabase.populateDatabase(profileDatabase)
+
         return view
     }
 
