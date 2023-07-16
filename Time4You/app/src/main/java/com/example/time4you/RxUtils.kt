@@ -12,3 +12,4 @@ fun subscribeOnBackground(function: () -> Unit) {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe()
 }
+

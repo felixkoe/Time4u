@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 
-class FragmentSecond : Fragment() {
+class FragmentCreateProfile : Fragment() {
 
     lateinit var fragmentTransaction: FragmentTransaction
 
@@ -18,7 +18,7 @@ class FragmentSecond : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_second, container, false)
+        val view = inflater.inflate(R.layout.fragment_create_profile, container, false)
         return view
     }
 
@@ -26,14 +26,14 @@ class FragmentSecond : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Find the button by its ID
-        val button: Button = view.findViewById(R.id.button_crate_delete_profile)
+        val button: Button = view.findViewById(R.id.buttin_create_profile)
 
         // Set a click listener on the button
         button.setOnClickListener {
             // Handle the button click event
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.container_fragment, FragmentCreateProfile())
+            fragmentTransaction.replace(R.id.container_fragment, FragmentSecond())
             fragmentTransaction.commit()
         }
     }

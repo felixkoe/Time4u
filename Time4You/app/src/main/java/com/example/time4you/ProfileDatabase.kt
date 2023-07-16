@@ -38,8 +38,15 @@ abstract class ProfileDatabase : RoomDatabase() {
             val profileDao = db.profileDao()
             subscribeOnBackground {
                 profileDao.insert(Profile("Felix", "Koelling", "Male",0,0,0,0))
-                profileDao.insert(Profile("Yakup", "Cilesiz", "Male",0,0,0,0))
+                profileDao.insert(Profile("Yakup", "Cilesiz", "Male",0,0,0,1))
 
+            }
+        }
+
+        fun deleteDatabase(db: ProfileDatabase){
+            val profileDao = db.profileDao()
+            subscribeOnBackground {
+                profileDao.deleteAllProfiles()
             }
         }
     }

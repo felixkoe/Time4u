@@ -44,7 +44,8 @@ class MainFragment : Fragment() {
         }
 
         val profileDatabase = ProfileDatabase.getInstance(requireContext())
-        ProfileDatabase.populateDatabase(profileDatabase)
+        //    ProfileDatabase.deleteDatabase(profileDatabase)
+        //    ProfileDatabase.populateDatabase(profileDatabase)
 
         return view
     }
