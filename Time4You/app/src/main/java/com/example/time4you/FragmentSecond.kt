@@ -27,7 +27,7 @@ class FragmentSecond : Fragment() {
 
         // Find the button by its ID
         val button: Button = view.findViewById(R.id.button_crate_delete_profile)
-
+        val del_but: Button = view.findViewById(R.id.delete_db_button)
         // Set a click listener on the button
         button.setOnClickListener {
             // Handle the button click event
@@ -35,6 +35,14 @@ class FragmentSecond : Fragment() {
             fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.container_fragment, FragmentCreateProfile())
             fragmentTransaction.commit()
+        }
+
+        del_but.setOnClickListener {
+            val profileDatabase = ProfileDatabase.getInstance(requireContext())
+            val profileDao = profileDatabase.profileDao()
+            subscribeOnBackground {
+                profileDao.deleteAllProfiles()
+            }
         }
     }
 }
