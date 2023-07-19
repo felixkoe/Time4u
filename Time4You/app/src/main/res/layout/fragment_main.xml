@@ -21,17 +21,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/load"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="64dp"
-        android:text="Second Fragment"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
-
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="188dp"
@@ -54,16 +43,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.505"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/countTime" />
+        app:layout_constraintTop_toBottomOf="@+id/timeDisplay" />
 
     <TextView
-        android:id="@+id/countTime"
+        android:id="@+id/timeDisplay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/button"
         android:layout_centerInParent="true"
         android:layout_marginTop="28dp"
         android:gravity="center"
+        android:text="00:00:00"
         android:textColor="@android:color/background_dark"
         android:textSize="32sp"
         app:layout_constraintTop_toBottomOf="@+id/imageView"

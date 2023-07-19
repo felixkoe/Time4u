@@ -1,4 +1,4 @@
-package com.example.time4you
+package com.example.time4you.view.activitys
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import com.example.time4you.R
 
 @Suppress("DEPRECATION")
 class SplashScreen : AppCompatActivity() {

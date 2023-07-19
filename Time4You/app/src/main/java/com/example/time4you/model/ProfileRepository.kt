@@ -1,4 +1,4 @@
-package com.example.time4you
+package com.example.time4you.model
 
 import android.app.Application
 import androidx.lifecycle.LiveData

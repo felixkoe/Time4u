@@ -14,11 +14,11 @@
         android:theme="@style/Theme.Time4You"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".view.activitys.MainActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name=".SplashScreen"
+            android:name=".view.activitys.SplashScreen"
             android:exported="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

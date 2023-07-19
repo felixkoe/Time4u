@@ -1,4 +1,4 @@
-package com.example.time4you
+package com.example.time4you.view.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,10 +8,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import java.lang.ClassCastException
-import android.os.CountDownTimer
-import android.widget.TextView
-import java.util.*
-import android.app.TimePickerDialog
+import com.example.time4you.model.ProfileDatabase
+import com.example.time4you.R
 
 
 class MainFragment : Fragment() {
@@ -20,12 +18,8 @@ class MainFragment : Fragment() {
         fun onButtonSelected()
     }
 
-    interface Timer {
-        fun startCountdownTimer(view: View)
-    }
 
     lateinit var listener : OnFragmentBtnSelected
-    lateinit var listener2 : Timer
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,14 +27,9 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
-        val clickMe = view.findViewById<Button>(R.id.load)
+        val clickMe = view.findViewById<Button>(R.id.button)
         clickMe.setOnClickListener {
             listener.onButtonSelected()
-        }
-        val clickMe2 = view.findViewById<Button>(R.id.button)
-        clickMe2.setOnClickListener {
-            val countTimeView = view.findViewById<TextView>(R.id.countTime)
-            listener2.startCountdownTimer(countTimeView)
         }
 
         val profileDatabase = ProfileDatabase.getInstance(requireContext())
@@ -54,9 +43,6 @@ class MainFragment : Fragment() {
         super.onAttach(context)
         if(context is OnFragmentBtnSelected) {
             listener = context
-        }
-        if(context is Timer) {
-            listener2 = context
         }
         else {
             throw ClassCastException("${context.toString()} must implement")

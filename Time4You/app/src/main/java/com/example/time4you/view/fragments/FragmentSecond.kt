@@ -1,13 +1,16 @@
-package com.example.time4you
+package com.example.time4you.view.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import com.example.time4you.model.ProfileDatabase
+import com.example.time4you.R
+import com.example.time4you.model.subscribeOnBackground
+import com.example.time4you.view.fragments.FragmentCreateProfile
 
 class FragmentSecond : Fragment() {
 

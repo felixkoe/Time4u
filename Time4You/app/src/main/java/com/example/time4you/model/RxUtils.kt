@@ -1,4 +1,4 @@
-package com.example.time4you
+package com.example.time4you.model
 
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers

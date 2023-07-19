@@ -1,6 +1,5 @@
-package com.example.time4you
+package com.example.time4you.view.fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.lang.ClassCastException
+import com.example.time4you.R
+import com.example.time4you.controller.CustomAdapter
+import com.example.time4you.controller.ItemsViewModel
 
 
 class FragmentShop : Fragment() {
