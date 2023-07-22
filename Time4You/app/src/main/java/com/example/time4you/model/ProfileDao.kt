@@ -2,6 +2,8 @@ package com.example.time4you.model
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
+
 
 @Dao
 interface ProfileDao {
@@ -20,4 +22,7 @@ interface ProfileDao {
 
     @Query("select * from profile_table order by userId desc")
     fun getAllProfiles(): LiveData<List<Profile>>
+
+    @Query("SELECT * FROM profile_table WHERE userId = :id")
+    fun getUserById(id: Int): Flow<Profile?>
 }

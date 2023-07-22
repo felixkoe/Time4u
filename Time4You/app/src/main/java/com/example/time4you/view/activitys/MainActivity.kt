@@ -21,9 +21,15 @@ import com.example.time4you.view.fragments.FragmentSecond
 import com.example.time4you.view.fragments.FragmentShop
 import com.google.android.material.navigation.NavigationView
 import java.util.Calendar
-import android.media.RingtoneManager
 import android.widget.Button
-import java.util.*
+import androidx.activity.viewModels
+import androidx.lifecycle.ViewModelProvider
+import com.example.time4you.model.ProfileDatabase
+import com.example.time4you.model.ProfileRepository
+import com.example.time4you.model.ProfileViewModel
+import com.example.time4you.model.ProfileViewModelFactory
+
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     MainFragment.OnFragmentBtnSelected{
@@ -38,6 +44,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var timeDisplay: TextView
     lateinit var button: Button
     var isTimerRunning = false
+
+    private val viewModel: ProfileViewModel by viewModels()
+    private lateinit var profileViewModel: ProfileViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +74,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         fragmentTransaction.add(R.id.container_fragment, MainFragment())
         fragmentTransaction.commit()
 
+        val profileRepository = ProfileRepository(application)
+
+        // Create the ProfileViewModelFactory with the ProfileRepository
+        val factory = ProfileViewModelFactory(profileRepository)
+        profileViewModel = ViewModelProvider(this, factory).get(ProfileViewModel::class.java)
     }
 
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -94,6 +108,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onButtonSelected() {
+
+        profileViewModel.addPoints(0, 100)
         showTimePickerDialog()
        /* fragmentManager = supportFragmentManager
         fragmentTransaction = fragmentManager.beginTransaction()
@@ -153,7 +169,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             override fun onFinish() {
                 timeDisplay.text = "00:00:00"
-                playRingtone()
                 // zu Holende Punkte mit den aktuell bestehenden Punkten von der Datenbank addieren und in der DB abspeichern
 
 
@@ -185,11 +200,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     //Ringtone
-    private fun playRingtone() {
-        val notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-        val ringtone = RingtoneManager.getRingtone(applicationContext, notification)
-        ringtone.play()
-    }
 
     private fun showMessage(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()

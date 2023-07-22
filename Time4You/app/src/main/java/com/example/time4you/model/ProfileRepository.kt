@@ -2,6 +2,11 @@ package com.example.time4you.model
 
 import android.app.Application
 import androidx.lifecycle.LiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.first
+
+
 
 
 class ProfileRepository(application: Application) {
@@ -48,6 +53,22 @@ class ProfileRepository(application: Application) {
         return allProfiles
     }
 
+    suspend fun addPoints(userId: Int, points: Int) = withContext(Dispatchers.IO) {
+        val user = profileDao.getUserById(userId).first()
+        user?.let {
+            it.pointsNow += points
+            it.pointsAll += points
+            profileDao.update(it)
+        }
+    }
 
+    suspend fun deletePoints(userId: Int, points: Int) = withContext(Dispatchers.IO) {
+        val user = profileDao.getUserById(userId).first()
+        user?.let {
+            it.pointsNow -= points
+            if (it.pointsNow < 0) it.pointsNow = 0
+            profileDao.update(it)
+        }
+    }
 
 }
