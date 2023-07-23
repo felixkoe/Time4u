@@ -11,13 +11,9 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
-import androidx.lifecycle.ViewModelProvider
 import com.example.time4you.model.Profile
 import com.example.time4you.model.ProfileDatabase
 import com.example.time4you.R
-import com.example.time4you.model.ProfileRepository
-import com.example.time4you.model.ProfileViewModel
-import com.example.time4you.model.ProfileViewModelFactory
 import com.example.time4you.model.subscribeOnBackground
 
 class FragmentCreateProfile : Fragment() {

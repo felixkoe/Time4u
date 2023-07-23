@@ -29,7 +29,7 @@ abstract class ProfileDatabase : RoomDatabase() {
 
         }
 
-        val MIGRATION_1_2 = object : Migration(1, 2) {
+        private val MIGRATION_1_2 = object : Migration(1, 2) {
              override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("ALTER TABLE profile_table ADD COLUMN profilePic INTEGER NOT NULL DEFAULT 0")
             }
@@ -51,12 +51,6 @@ abstract class ProfileDatabase : RoomDatabase() {
             }
         }
 
-        fun deleteDatabase(db: ProfileDatabase){
-            val profileDao = db.profileDao()
-            subscribeOnBackground {
-                profileDao.deleteAllProfiles()
-            }
-        }
     }
 
 

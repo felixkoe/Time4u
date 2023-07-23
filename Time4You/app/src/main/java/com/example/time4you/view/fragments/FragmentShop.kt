@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -24,10 +23,10 @@ import kotlinx.coroutines.withContext
 
 class FragmentShop : Fragment() {
 
-    var groc = 0b0000000000
-    lateinit var profileViewModel: ProfileViewModel
+    private var groc = 0b0000000000
+    private lateinit var profileViewModel: ProfileViewModel
 
-    val profilePicturesAndPrices = listOf(
+    private val profilePicturesAndPrices = listOf(
         Triple(R.drawable.ppic1, 50, 0b1),
         Triple(R.drawable.ppic2, 100, 0b10),
         Triple(R.drawable.ppic3, 150, 0b100),
@@ -78,13 +77,12 @@ class FragmentShop : Fragment() {
         // This loop will create 20 Views containing
         // the image with the count of view
         for ((pic, price, invNum) in profilePicturesAndPrices) {
-            var displyName : String = "empty"
-            if(checkIfBought(invNum)){
-                displyName = "Bought"
+            var displayName : String = if(checkIfBought(invNum)){
+                "Bought"
             }else{
-                displyName = "Costs: $price"
+                "Costs: $price"
             }
-            data.add(ItemsViewModel(pic, displyName,
+            data.add(ItemsViewModel(pic, displayName,
                 button1ClickListener = {
                     // Handle Buy click here
                     buy(price, invNum)
@@ -112,17 +110,16 @@ class FragmentShop : Fragment() {
         recyclerview.adapter = adapter
     }
 
-    fun syncGroc(){
+    private fun syncGroc(){
         profileViewModel.changeLevel(0, groc)
     }
 
-    fun checkIfBought(whichPic : Int) : Boolean{
+    private fun checkIfBought(whichPic: Int): Boolean {
         val check = groc and whichPic
-        val checkBool = check > 0
-        return checkBool
+        return check > 0
     }
 
-    fun buy(price: Int, whichPic: Int){
+    private fun buy(price: Int, whichPic: Int){
         if(checkIfBought(whichPic)){
             Toast.makeText(requireContext(), "Already bought", Toast.LENGTH_SHORT).show()
         }
@@ -133,7 +130,7 @@ class FragmentShop : Fragment() {
         }
     }
 
-    fun replaceProfilePic(inv: Int) {
+    private fun replaceProfilePic(inv: Int) {
         profileViewModel.changePic(0, inv)
     }
 }

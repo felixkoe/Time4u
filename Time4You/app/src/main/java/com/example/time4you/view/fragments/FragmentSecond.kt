@@ -1,5 +1,6 @@
 package com.example.time4you.view.fragments
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,9 +23,9 @@ import kotlinx.coroutines.launch
 class FragmentSecond : Fragment() {
 
     private lateinit var fragmentTransaction: FragmentTransaction
-    lateinit var profileViewModel: ProfileViewModel
+    private lateinit var profileViewModel: ProfileViewModel
 
-    val profilePicturesAndIds = listOf(
+    private val profilePicturesAndIds = listOf(
         Pair(R.drawable.ppic1, 0b1),
         Pair(R.drawable.ppic2, 0b10),
         Pair(R.drawable.ppic3, 0b100),
@@ -50,6 +51,7 @@ class FragmentSecond : Fragment() {
         return inflater.inflate(R.layout.fragment_second, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

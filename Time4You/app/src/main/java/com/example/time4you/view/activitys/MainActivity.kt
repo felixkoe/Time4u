@@ -28,7 +28,6 @@ import com.example.time4you.model.ProfileRepository
 import com.example.time4you.model.ProfileViewModel
 import com.example.time4you.model.ProfileViewModelFactory
 import androidx.lifecycle.lifecycleScope
-import com.example.time4you.model.ProfileDatabase
 import com.example.time4you.view.fragments.FragmentPatchNotes
 import kotlinx.coroutines.launch
 
@@ -49,7 +48,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var profileViewModel: ProfileViewModel
     var pointsToWin: Long = 0
 
-    val profilePicturesAndIds = listOf(
+    private val profilePicturesAndIds = listOf(
         Pair(R.drawable.ppic1, 0b1),
         Pair(R.drawable.ppic2, 0b10),
         Pair(R.drawable.ppic3, 0b100),
@@ -194,6 +193,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         timeDisplay = findViewById(R.id.timeDisplay)
         button = findViewById(R.id.button)
         timer = object : CountDownTimer(totalTimeMillis, 1000) {
+            @SuppressLint("SetTextI18n")
             override fun onTick(millisUntilFinished: Long) {
                 val secondsRemaining = millisUntilFinished / 1000
                 val hours = secondsRemaining / 3600
@@ -216,15 +216,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 pointsToWin = minutes + (hours * 60) + 1
                 val showWinnablePoints = findViewById<TextView>(R.id.pointsToWin_text)
-                showWinnablePoints.text = "Zu gewinnende Punkte: " + pointsToWin.toString()
+                showWinnablePoints.text = "Zu gewinnende Punkte: $pointsToWin"
                 button.text = "Abbrechen"
                 isTimerRunning = true
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
             }
 
+            @SuppressLint("SetTextI18n")
             override fun onFinish() {
                 timeDisplay.text = "00:00:00"
-                var pointsToWinInt: Int = pointsToWin.toInt()
+                val pointsToWinInt: Int = pointsToWin.toInt()
                 profileViewModel.addPoints(0, pointsToWinInt)
 
 
@@ -245,6 +246,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         button.isEnabled = true
     }
 
+    @SuppressLint("SetTextI18n")
     private fun cancelTimer() {
         timer.cancel()
         showMessage("Der Timer wurde abgebrochen, es werden keine Punkte gutgeschrieben!")
@@ -264,8 +266,4 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun displayProfilePoints(profilePoints: Int) {
-        val textPointsAll = findViewById<TextView>(R.id.pointsall_menu)
-        textPointsAll.text = profilePoints.toString()
-    }
 }
