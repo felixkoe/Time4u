@@ -11,4 +11,5 @@ data class Profile(val firstName: String,
                    var pointsAll: Int,
                    var level: Int,
                    val userId: Int,
+                   var profilePic: Int,
                 @PrimaryKey(autoGenerate = false) val id: Int? = null)

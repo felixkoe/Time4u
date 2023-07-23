@@ -7,7 +7,7 @@
     android:background="#47D894">
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/profilename_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Profile Name"
@@ -21,7 +21,7 @@
         app:layout_constraintVertical_bias="0.407" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/pointsall_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="124dp"
@@ -34,7 +34,7 @@
         app:layout_constraintVertical_bias="0.222" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/lvl_menu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="124dp"
@@ -43,7 +43,7 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        app:layout_constraintTop_toBottomOf="@+id/pointsall_menu"
         app:layout_constraintVertical_bias="0.148" />
 
     <ImageView
@@ -54,6 +54,6 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/mann" />
+        app:srcCompat="@drawable/ppic6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -45,7 +45,7 @@
         android:id="@+id/button_crate_delete_profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delete/Create Profile"
+        android:text="Create Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,15 +60,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/mann" />
+        app:srcCompat="@drawable/ppic6" />
 
     <Button
         android:id="@+id/delete_db_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Delete DB"
+        android:text="Delete Profile"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_crate_delete_profile" />
+        app:layout_constraintTop_toBottomOf="@+id/button_crate_delete_profile"
+        app:layout_constraintVertical_bias="0.157" />
 </androidx.constraintlayout.widget.ConstraintLayout>

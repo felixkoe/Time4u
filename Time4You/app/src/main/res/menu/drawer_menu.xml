@@ -15,7 +15,7 @@
             android:icon="@drawable/baseline_home_24"
             android:title="Shop" />
         <item
-            android:id="@+id/another2"
+            android:id="@+id/patchnotes"
             android:icon="@drawable/baseline_group_add_24"
             android:title="Patch Notes" />
         </menu>

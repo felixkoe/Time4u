@@ -11,21 +11,24 @@ import android.widget.Button
 import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.ViewModelProvider
 import com.example.time4you.model.Profile
 import com.example.time4you.model.ProfileDatabase
 import com.example.time4you.R
+import com.example.time4you.model.ProfileRepository
+import com.example.time4you.model.ProfileViewModel
+import com.example.time4you.model.ProfileViewModelFactory
 import com.example.time4you.model.subscribeOnBackground
 
 class FragmentCreateProfile : Fragment() {
 
-    lateinit var fragmentTransaction: FragmentTransaction;
-    lateinit var vorname: EditText
-    lateinit var nachname: EditText
-    lateinit var gender: EditText
-
-    lateinit var vorname_db: String
-    lateinit var nachname_db: String
-    lateinit var gender_db: String
+    private lateinit var fragmentTransaction: FragmentTransaction
+    private lateinit var vorname: EditText
+    private lateinit var nachname: EditText
+    private lateinit var gender: EditText
+    lateinit var vornameDb: String
+    lateinit var nachnameDb: String
+    lateinit var genderDb: String
 
 
     @SuppressLint("MissingInflatedId")
@@ -38,6 +41,7 @@ class FragmentCreateProfile : Fragment() {
         vorname = view.findViewById(R.id.vorname_edit)
         nachname = view.findViewById(R.id.nachname_edit)
         gender = view.findViewById(R.id.gender_edit)
+
         return view
     }
 
@@ -50,7 +54,7 @@ class FragmentCreateProfile : Fragment() {
         // Set a click listener on the button
         button.setOnClickListener {
             // Handle the button click event
-            create_profile()
+            createProfile()
             val fragmentManager = requireActivity().supportFragmentManager
             fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.container_fragment, FragmentSecond())
@@ -65,7 +69,7 @@ class FragmentCreateProfile : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // Called when the text is being changed
-                vorname_db = s.toString()
+                vornameDb = s.toString()
                 // Do something with the input text
             }
 
@@ -81,7 +85,7 @@ class FragmentCreateProfile : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // Called when the text is being changed
-                nachname_db = s.toString()
+                nachnameDb = s.toString()
                 // Do something with the input text
             }
 
@@ -97,7 +101,7 @@ class FragmentCreateProfile : Fragment() {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 // Called when the text is being changed
-                gender_db = s.toString()
+                genderDb = s.toString()
                 // Do something with the input text
             }
 
@@ -107,12 +111,11 @@ class FragmentCreateProfile : Fragment() {
         })
     }
 
-    fun create_profile(){
+    private fun createProfile(){
         val profileDatabase = ProfileDatabase.getInstance(requireContext())
-
         val profileDao = profileDatabase.profileDao()
         subscribeOnBackground {
-            profileDao.insert(Profile(vorname_db, nachname_db, gender_db,0,0,0,0))
+            profileDao.insert(Profile(vornameDb, nachnameDb, genderDb,0,0,0,0, 0))
         }
     }
 }

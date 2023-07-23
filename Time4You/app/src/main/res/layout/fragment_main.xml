@@ -6,13 +6,12 @@
     android:layout_height="match_parent">
 
 
-
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/picture_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="228dp"
-        android:text="Main Fragment"
+        android:layout_marginTop="192dp"
+        android:text="Beginne deine Auszeit!"
         android:textColor="#000000"
         android:textSize="26sp"
         android:textStyle="bold"
@@ -29,7 +28,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/picture_name"
         app:srcCompat="@drawable/_01_flugzeug" />
 
     <Button
@@ -37,13 +36,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="20dp"
         android:text="Start Timer"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timeDisplay" />
+        app:layout_constraintTop_toBottomOf="@+id/pointsToWin_text" />
 
     <TextView
         android:id="@+id/timeDisplay"
@@ -58,5 +57,17 @@
         android:textSize="32sp"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         tools:layout_editor_absoluteX="0dp" />
+
+    <TextView
+        android:id="@+id/pointsToWin_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Zu gewinnende Punkte: 0"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/timeDisplay" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

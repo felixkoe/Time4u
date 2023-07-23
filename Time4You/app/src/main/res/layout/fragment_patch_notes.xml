@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:layout_marginBottom="2dp"
+        android:text="Patch Notes"
+        android:textSize="45sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="399dp"
+        android:layout_height="633dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Patchnotes 22.07.2023  \n\nPatch 1.0   \n\nReleasepatch  \n\nneuer Inhalt  \n\n+ Ganz einfach den Timer auswählen, Timer starten und Punkte verdienen \n+ Gebe Punkte im Shop aus um neue und besondere Icons freizuschalten    \n\nPatchnotes 10.07.23 \n\nPatch 0.1  \n\n+ Implementierung von Fragments \n\n+ Splash screen hinzugefügt   \n\nPatchnotes 11.07.23 \n\nPatch 0.2  \n\n+ Implementierung room-Datenbank vorbereiten \n+ Shop-fragment mit funktionierender recyclerview    \n\nPatchnotes 12.07.23 \n\nPatch 0.3  \n+ Vollständige Implementierung room-Datenbank    \n\nPatchnotes 16.07.23 \n\nPatch 0.4  \n+ Erstellen Profile\n- Seite    \n\nPatchnotes 19.07.23 \n\nPatch 0.5  \n+ Reorganisieren der App-Struktur \n+ Timer angepasst \n+ Punktesystem überabeitet    \n\nPatchnotes 22.07.23 \n\nPatch 0.6  \n+ Punktesystem fertiggestellt \n+ Timer fertiggestellt \n+ Shop fertiggestellt "
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
