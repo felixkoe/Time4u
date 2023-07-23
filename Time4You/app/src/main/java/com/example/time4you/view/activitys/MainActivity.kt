@@ -2,7 +2,6 @@ package com.example.time4you.view.activitys
 
 import android.annotation.SuppressLint
 import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.provider.Settings
