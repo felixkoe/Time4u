@@ -14,7 +14,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.time4you.model.Profile
 import com.example.time4you.model.ProfileDatabase
 import com.example.time4you.R
-import com.example.time4you.model.subscribeOnBackground
+import com.example.time4you.controller.subscribeOnBackground
 
 class FragmentCreateProfile : Fragment() {
 

@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.time4you.R
+import com.example.time4you.model.ItemsViewModel
 
 class CustomAdapter(private val mList: List<ItemsViewModel>) :
     RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
@@ -36,6 +37,8 @@ class CustomAdapter(private val mList: List<ItemsViewModel>) :
         holder.buyButton.setOnClickListener(itemsViewModel.button1ClickListener)
         holder.useButton.setOnClickListener(itemsViewModel.button2ClickListener)
 
+        holder.textView2.text = itemsViewModel.text2
+
     }
 
     // return the number of the items in the list
@@ -49,5 +52,6 @@ class CustomAdapter(private val mList: List<ItemsViewModel>) :
         val textView: TextView = itemView.findViewById(R.id.picture_name)
         val buyButton: Button = itemView.findViewById(R.id.buy_button)
         val useButton: Button = itemView.findViewById(R.id.use_button)
+        val textView2: TextView = itemView.findViewById(R.id.req_lvl)
     }
 }

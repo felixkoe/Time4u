@@ -12,10 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.time4you.R
 import com.example.time4you.controller.CustomAdapter
-import com.example.time4you.controller.ItemsViewModel
+import com.example.time4you.model.ItemsViewModel
 import com.example.time4you.model.ProfileRepository
 import com.example.time4you.model.ProfileViewModel
 import com.example.time4you.model.ProfileViewModelFactory
+import com.example.time4you.model.Quadruple
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -25,18 +26,21 @@ class FragmentShop : Fragment() {
 
     private var groc = 0b0000000000
     private lateinit var profileViewModel: ProfileViewModel
+    private var level_local : Int = 0
+    private var points_now : Int = 0
 
-    private val profilePicturesAndPrices = listOf(
-        Triple(R.drawable.ppic1, 50, 0b1),
-        Triple(R.drawable.ppic2, 100, 0b10),
-        Triple(R.drawable.ppic3, 150, 0b100),
-        Triple(R.drawable.ppic4, 200, 0b1000),
-        Triple(R.drawable.ppic5, 250, 0b10000),
-        Triple(R.drawable.ppic6, 300, 0b100000),
-        Triple(R.drawable.ppic7, 350, 0b1000000),
-        Triple(R.drawable.ppic8, 400, 0b10000000),
-        Triple(R.drawable.ppic9, 450, 0b100000000),
-        Triple(R.drawable.ppic10, 500, 0b1000000000)
+
+    private val profilePicturesAndPrices: List<Quadruple<Int, Int, Int, Int>> = listOf(
+        Quadruple(R.drawable.ppic1, 50, 0b1, 50),
+        Quadruple(R.drawable.ppic2, 100, 0b10, 50),
+        Quadruple(R.drawable.ppic3, 150, 0b100, 100),
+        Quadruple(R.drawable.ppic4, 200, 0b1000, 100),
+        Quadruple(R.drawable.ppic5, 250, 0b10000, 500),
+        Quadruple(R.drawable.ppic6, 300, 0b100000, 500),
+        Quadruple(R.drawable.ppic7, 350, 0b1000000, 1000),
+        Quadruple(R.drawable.ppic8, 400, 0b10000000, 1000),
+        Quadruple(R.drawable.ppic9, 450, 0b100000000, 2000),
+        Quadruple(R.drawable.ppic10, 500, 0b1000000000, 2000)
     )
 
     override fun onCreateView(
@@ -52,6 +56,7 @@ class FragmentShop : Fragment() {
 
         lifecycleScope.launch {
             restoreGroc()
+            restoreLevel()
             withContext(Dispatchers.Main) {
                 setupRecyclerView(view)
             }
@@ -66,6 +71,17 @@ class FragmentShop : Fragment() {
         }
     }
 
+    private suspend fun restoreLevel(){
+        profileViewModel.profile.firstOrNull()?.let { profile ->
+            level_local = profile.pointsAll
+        }
+    }
+
+    private suspend fun getPoints(){
+        profileViewModel.profile.firstOrNull()?.let { profile ->
+            points_now = profile.pointsNow
+        }
+    }
     private fun setupRecyclerView(view: View) {
         val recyclerview = view.findViewById<RecyclerView>(R.id.recyclerview)
         recyclerview.layoutManager = LinearLayoutManager(activity)
@@ -76,31 +92,28 @@ class FragmentShop : Fragment() {
 
         // This loop will create 20 Views containing
         // the image with the count of view
-        for ((pic, price, invNum) in profilePicturesAndPrices) {
-            var displayName : String = if(checkIfBought(invNum)){
+        for ((pic, price, invNum, lvl) in profilePicturesAndPrices) {
+            val displayName : String = if(checkIfBought(invNum)){
                 "Bought"
             }else{
                 "Costs: $price"
             }
-            data.add(ItemsViewModel(pic, displayName,
-                button1ClickListener = {
-                    // Handle Buy click here
-                    buy(price, invNum)
-                    if(checkIfBought(invNum)){
-                        Toast.makeText(context, "Bought", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(context, "Buy $invNum", Toast.LENGTH_SHORT).show()
-                    }
-                },
-                button2ClickListener = {
-                    // Handle Use click here
-                    if(checkIfBought(invNum)){
-                        replaceProfilePic(invNum)
-                        Toast.makeText(requireContext(), "changed", Toast.LENGTH_SHORT).show()
-                    }else{
-                        Toast.makeText(context, "Not yet Bought", Toast.LENGTH_SHORT).show()
-                    }
-                }))
+            data.add(
+                ItemsViewModel(pic, displayName,
+                    button1ClickListener = {
+                        // Handle Buy click here
+                        buy(price, invNum, lvl)
+                    },
+                    button2ClickListener = {
+                        // Handle Use click here
+                        if(checkIfBought(invNum)){
+                            replaceProfilePic(invNum)
+                            Toast.makeText(requireContext(), "changed", Toast.LENGTH_SHORT).show()
+                        }else{
+                            Toast.makeText(context, "Not yet Bought", Toast.LENGTH_SHORT).show()
+                        }
+                    }, "At Lvl: $lvl")  // Pass 'text2' as the last parameter
+            )
         }
 
         // This will pass the ArrayList to our Adapter
@@ -119,14 +132,21 @@ class FragmentShop : Fragment() {
         return check > 0
     }
 
-    private fun buy(price: Int, whichPic: Int){
+    private fun buy(price: Int, whichPic: Int, levelPic: Int){
         if(checkIfBought(whichPic)){
             Toast.makeText(requireContext(), "Already bought", Toast.LENGTH_SHORT).show()
         }
         else{
+            lifecycleScope.launch {
+                getPoints()
+            }
+            if(points_now >= price && level_local >= levelPic){
             profileViewModel.deletePoints(0, price)
             groc = groc or whichPic
-            syncGroc()
+            syncGroc()}
+            else{
+                Toast.makeText(requireContext(), "Not Enough Points or lvl not high enough!!", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

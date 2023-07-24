@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.time4you.controller.subscribeOnBackground
 
 @Database(entities = [Profile::class], version = 2,  exportSchema = false)
 abstract class ProfileDatabase : RoomDatabase() {

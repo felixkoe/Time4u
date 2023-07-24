@@ -17,7 +17,7 @@ import com.example.time4you.R
 import com.example.time4you.model.ProfileRepository
 import com.example.time4you.model.ProfileViewModel
 import com.example.time4you.model.ProfileViewModelFactory
-import com.example.time4you.model.subscribeOnBackground
+import com.example.time4you.controller.subscribeOnBackground
 import kotlinx.coroutines.launch
 
 class FragmentSecond : Fragment() {
