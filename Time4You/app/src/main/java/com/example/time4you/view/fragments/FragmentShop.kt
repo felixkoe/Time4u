@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -21,13 +22,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.properties.Delegates
 
 class FragmentShop : Fragment() {
 
-    private var groc = 0b0000000000
+    private var boughtPics = listOf(
+        Triple(R.drawable.ppic1, 0b1, 0),
+        Triple(R.drawable.ppic2, 0b10, 0),
+        Triple(R.drawable.ppic3, 0b100, 0),
+        Triple(R.drawable.ppic4, 0b1000, 0),
+        Triple(R.drawable.ppic5, 0b10000, 0),
+        Triple(R.drawable.ppic6, 0b100000, 0),
+        Triple(R.drawable.ppic7, 0b1000000, 0),
+        Triple(R.drawable.ppic8, 0b10000000, 0),
+        Triple(R.drawable.ppic9, 0b100000000, 0),
+        Triple(R.drawable.ppic10, 0b1000000000, 0)
+    )
+   var  newBoughtPics = boughtPics.toMutableList()
+
+    private var groc: Int = 0b0000000000
     private lateinit var profileViewModel: ProfileViewModel
-    private var level_local : Int = 0
-    private var points_now : Int = 0
+    private var levelLocal : Int = 0
+    private var pointsNow : Int = 0
 
 
     private val profilePicturesAndPrices: List<Quadruple<Int, Int, Int, Int>> = listOf(
@@ -56,8 +72,10 @@ class FragmentShop : Fragment() {
 
         lifecycleScope.launch {
             restoreGroc()
-            restoreLevel()
+            istBoughtAll()
             withContext(Dispatchers.Main) {
+                restoreLevel()
+                getPoints()
                 setupRecyclerView(view)
             }
         }
@@ -73,13 +91,13 @@ class FragmentShop : Fragment() {
 
     private suspend fun restoreLevel(){
         profileViewModel.profile.firstOrNull()?.let { profile ->
-            level_local = profile.pointsAll
+            levelLocal = profile.pointsAll
         }
     }
 
     private suspend fun getPoints(){
         profileViewModel.profile.firstOrNull()?.let { profile ->
-            points_now = profile.pointsNow
+            pointsNow = profile.pointsNow
         }
     }
     private fun setupRecyclerView(view: View) {
@@ -88,12 +106,12 @@ class FragmentShop : Fragment() {
 
         // ArrayList of class ItemsViewModel
         val data = ArrayList<ItemsViewModel>()
-
-
-        // This loop will create 20 Views containing
+        // This loop will create 10 Views containing
         // the image with the count of view
-        for ((pic, price, invNum, lvl) in profilePicturesAndPrices) {
-            val displayName : String = if(checkIfBought(invNum)){
+        for (i in profilePicturesAndPrices.indices) {
+            val (pic, price, invNum, lvl) = profilePicturesAndPrices[i]
+            val (_, _, isbought) = newBoughtPics[i]
+            val displayName : String = if(isbought == 1){
                 "Bought"
             }else{
                 "Costs: $price"
@@ -137,19 +155,27 @@ class FragmentShop : Fragment() {
             Toast.makeText(requireContext(), "Already bought", Toast.LENGTH_SHORT).show()
         }
         else{
-            lifecycleScope.launch {
-                getPoints()
-            }
-            if(points_now >= price && level_local >= levelPic){
-            profileViewModel.deletePoints(0, price)
-            groc = groc or whichPic
-            syncGroc()}
+            if(price <= pointsNow && levelPic <= levelLocal){
+                profileViewModel.deletePoints(0, price)
+                groc = groc or whichPic
+                Toast.makeText(requireContext(), "Bought", Toast.LENGTH_SHORT).show()
+                syncGroc()}
             else{
-                Toast.makeText(requireContext(), "Not Enough Points or lvl not high enough!!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Not Enough Points or lvl not high enough!! $pointsNow", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+    private fun istBoughtAll(){
+        for (i in newBoughtPics.indices) {
+            val (pic, inv, isbought) = newBoughtPics[i]
+            if ((groc and inv) == inv) {
+                newBoughtPics[i] = Triple(pic, inv, 1)
+            } else {
+                newBoughtPics[i] = Triple(pic, inv, 0)
+            }
+        }
+    }
     private fun replaceProfilePic(inv: Int) {
         profileViewModel.changePic(0, inv)
     }

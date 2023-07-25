@@ -161,7 +161,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onButtonSelected() {
         if (isTimerRunning) {
             cancelTimer()
-            profileViewModel.addPoints(0, 1000)
         } else {
 
             showTimePickerDialog()
