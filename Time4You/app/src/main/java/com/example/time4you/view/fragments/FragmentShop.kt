@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -121,6 +122,7 @@ class FragmentShop : Fragment() {
                     button1ClickListener = {
                         // Handle Buy click here
                         buy(price, invNum, lvl)
+                        refreshFragment()
                     },
                     button2ClickListener = {
                         // Handle Use click here
@@ -178,5 +180,15 @@ class FragmentShop : Fragment() {
     }
     private fun replaceProfilePic(inv: Int) {
         profileViewModel.changePic(0, inv)
+    }
+
+    private fun refreshFragment() {
+        val fragmentTransaction: FragmentTransaction = parentFragmentManager.beginTransaction()
+
+        // Replace the current instance of this fragment with a new instance
+        fragmentTransaction.replace(R.id.container_fragment, FragmentShop())
+
+        // Commit the transaction
+        fragmentTransaction.commit()
     }
 }

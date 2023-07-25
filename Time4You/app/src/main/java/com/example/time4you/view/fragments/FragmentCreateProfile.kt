@@ -36,7 +36,6 @@ class FragmentCreateProfile : Fragment() {
         val view = inflater.inflate(R.layout.fragment_create_profile, container, false)
         vorname = view.findViewById(R.id.vorname_edit)
         nachname = view.findViewById(R.id.nachname_edit)
-        gender = view.findViewById(R.id.gender_edit)
 
         return view
     }
@@ -90,28 +89,13 @@ class FragmentCreateProfile : Fragment() {
             }
         })
 
-        gender.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Called before the text is changed
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Called when the text is being changed
-                genderDb = s.toString()
-                // Do something with the input text
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                // Called after the text has changed
-            }
-        })
     }
 
     private fun createProfile(){
         val profileDatabase = ProfileDatabase.getInstance(requireContext())
         val profileDao = profileDatabase.profileDao()
         subscribeOnBackground {
-            profileDao.insert(Profile(vornameDb, nachnameDb, genderDb,0,0,0,0, 0))
+            profileDao.insert(Profile(vornameDb, nachnameDb, "N/A",0,0,0,0, 0))
         }
     }
 }

@@ -31,6 +31,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.time4you.view.fragments.FragmentPatchNotes
 import kotlinx.coroutines.launch
 
+import android.view.View
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
     MainFragment.OnFragmentBtnSelected {
@@ -85,8 +86,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     drawerLayout.openDrawer(GravityCompat.START)
                 }
             }
+            Toast.makeText(applicationContext, "Konzentrier dich auf deine Arbeit!", Toast.LENGTH_SHORT).show()
         }
-        drawerLayout.addDrawerListener(actionBarDrawerToggle)
+        drawerLayout.addDrawerListener(object : DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                // Respond when the drawer's position changes
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                // Respond when the drawer is opened
+                updateProfileData()
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                // Respond when the drawer is closed
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+                // Respond when the drawer motion state changes
+            }
+        })
         actionBarDrawerToggle.syncState()
 
         // load default Fragment
@@ -101,7 +120,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val factory = ProfileViewModelFactory(profileRepository)
         profileViewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
 
+    }
 
+    @SuppressLint("SetTextI18n")
+    private fun updateProfileData() {
+        lifecycleScope.launch {
+            profileViewModel.profile.collect { profile ->
+                findViewById<TextView>(R.id.pointsall_menu).text =
+                    "Points: " + profile?.pointsNow.toString()
+                findViewById<TextView>(R.id.lvl_menu).text =
+                    "Level: " + profile?.pointsAll.toString()
+                findViewById<TextView>(R.id.profilename_menu).text =
+                    profile?.firstName.toString() + " " + profile?.lastName.toString()
+
+                val imageId = profile?.profilePic
+                val selectedImageResource = profilePicturesAndIds.find { it.second == imageId }?.first
+                if (selectedImageResource != null) {
+                    val profileImageView = findViewById<ImageView>(R.id.imageView2)
+                    profileImageView.setImageResource(selectedImageResource)
+                }
+            }
+        }
     }
 
     @SuppressLint("SetTextI18n")

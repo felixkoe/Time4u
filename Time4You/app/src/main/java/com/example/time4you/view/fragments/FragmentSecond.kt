@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.ViewModelProvider
@@ -37,7 +38,7 @@ class FragmentSecond : Fragment() {
         Pair(R.drawable.ppic9, 0b100000000),
         Pair(R.drawable.ppic10, 0b1000000000)
     )
-
+    var isThere: Int = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,6 +49,12 @@ class FragmentSecond : Fragment() {
         val factory = ProfileViewModelFactory(profileRepository)
         profileViewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
 
+        lifecycleScope.launch {
+            profileViewModel.profile.collect { profile ->
+                if(profile?.userId != null)
+                isThere = 1
+            }
+        }
         return inflater.inflate(R.layout.fragment_second, container, false)
     }
 
@@ -77,17 +84,32 @@ class FragmentSecond : Fragment() {
         // Set a click listener on the button
         button.setOnClickListener {
             // Handle the button click event
-            val fragmentManager = requireActivity().supportFragmentManager
-            fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.container_fragment, FragmentCreateProfile())
-            fragmentTransaction.commit()
+
+
+
+            if(isThere != 1) {
+                val fragmentManager = requireActivity().supportFragmentManager
+                fragmentTransaction = fragmentManager.beginTransaction()
+                fragmentTransaction.replace(R.id.container_fragment, FragmentCreateProfile())
+                fragmentTransaction.commit()
+            }
+            else{
+                Toast.makeText(requireContext(), "You already have an User!!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         delBut.setOnClickListener {
-            val profileDatabase = ProfileDatabase.getInstance(requireContext())
-            val profileDao = profileDatabase.profileDao()
-            subscribeOnBackground {
-                profileDao.deleteAllProfiles()
+            if(isThere == 1) {
+                val profileDatabase = ProfileDatabase.getInstance(requireContext())
+                val profileDao = profileDatabase.profileDao()
+                Toast.makeText(requireContext(), "User Deleted!!", Toast.LENGTH_SHORT).show()
+                isThere = 0
+                subscribeOnBackground {
+                    profileDao.deleteAllProfiles()
+                }
+            }
+            else{
+                Toast.makeText(requireContext(), "Nothing to delete!!", Toast.LENGTH_SHORT).show()
             }
         }
     }
